@@ -4,7 +4,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package java.org.jlab.dc_calibration;
+package org.jlab.dc_calibration;
 
 //http://stackoverflow.com/questions/4412020/using-abs-method-in-java-my-compiler-doesnt-know-the-method
 import static java.lang.Math.abs;
@@ -52,19 +52,16 @@ public class ReadRecDataForMinuit implements ActionListener {
 	static long numEvents = 15000;// (long) 1e9; // events to process
 	static long printEventNr = 20000; // display progress
 
-	// Global variables accessable from other classes as well
-	// http://stackoverflow.com/questions/19939769/how-do-i-create-a-global-variable-in-java-such-that-all-classes-can-access-it
+	// Global variables accessible from other classes as well
 	public static final int nSupLayers = 2;
 	public static final int nThBinsVz = 6; // [nThBinsVZ][2]
 	// double thEdgeVz[][] = { {-2.0, 2.0}, {8.0, 12.0}, {18.0, 22.0}, {28.0,
 	// 32.0}, {38.0, 42.0}, {48.0, 52.0}};
-	public static final double thEdgeVzL[] = { -2.0, 8.0, 18.0, 28.0, 38.0, 48.0 };
-	public static final double thEdgeVzH[] = { 2.0, 12.0, 22.0, 32.0, 42.0, 52.0 };
+	public static final double[] thEdgeVzL = { -2.0, 8.0, 18.0, 28.0, 38.0, 48.0 };
+	public static final double[] thEdgeVzH = { 2.0, 12.0, 22.0, 32.0, 42.0, 52.0 };
 	public static final double[] wpdist = { 0.3861, 0.4042, 0.6219, 0.6586, 0.9351, 0.9780 };
-	public static final double rad2deg = 57.2957795130823229;
-	public static final double deg2rad = 1.74532925199432955e-02;// =1.0/rad2deg;
-																	// //ROOT:
-																	// 180.0/TMath::Pi()
+	public static final double rad2deg = 180.0 / Math.PI;
+	public static final double deg2rad = Math.PI / 180.0;
 	public static final double cos30 = Math.cos(30.0 / rad2deg);
 	public static final double beta = 1.0; // It has to be made
 											// particle/momentum dependent later
@@ -125,15 +122,15 @@ public class ReadRecDataForMinuit implements ActionListener {
 
 		int inFileNum = 1;
 		String inputFile = null;
-		String fDir = "C:\\Users\\KPAdhikari\\Desktop\\BigFls\\CLAS12";
-		String fName = "reconstructedDataR128T0corT2DfromCCDBvarFit10";
+		String fDir = "/Volumes/Mac_Storage/Work_Codes/CLAS12/DC_Calibration/data/";
+		String fName = "reconstructedDataR128T0corT2DfromCCDBvarFit08.1.evio";
 		EvioDataChain reader = new EvioDataChain();
 		// for (String inputFile : inputFiles) {
-		for (int fN = 0; fN < inFileNum; fN++) {
-			// if (inputFile == null) { break; }
-			inputFile = String.format("%s\\%s.%d.evio", fDir, fName, fN);
-			reader.addFile(inputFile);
-		}
+		// for (int fN = 0; fN < inFileNum; fN++) {
+		// if (inputFile == null) { break; }
+		inputFile = fDir + fName;
+		reader.addFile(inputFile);
+		// }
 		reader.open();
 		System.out.println("Opened the input data file (from ReadRecDataIn class) !");
 
@@ -545,7 +542,8 @@ public class ReadRecDataForMinuit implements ActionListener {
 		if (debug == -3) {
 			// output = new BufferedWriter(new FileWriter(txtOp)); //clears file
 			// every time
-			// ou have to open the file in append mode, which can be achieved by
+			// you have to open the file in append mode, which can be achieved
+			// by
 			// using the FileWriter(String fileName, boolean append)
 			// constructor.
 			output = new BufferedWriter(new FileWriter(txtOp, true)); // keeps
@@ -561,64 +559,23 @@ public class ReadRecDataForMinuit implements ActionListener {
 			output.close();
 			appendIt(txtOp, "Haha ha ...\n");
 		}
-
-		// if(debug==-3) output.close();
 		if (debug == -3)
 			appendIt(txtOp, "Haha ha ...2 \n");
 
-		/*
-		 * EvioDataChain reader = new EvioDataChain();
-		 * //reader.addFile(inputFile); //reader.open(); for(int fN=0;
-		 * fN<inFileNum;fN++) { inputFile =
-		 * String.format("%s.%d.evio",args[0],fN); //inputFile =
-		 * String.format("%s.%d.n.evio",args[0],fN); //temp
-		 * System.out.println("Inputfile: " + inputFile);
-		 * reader.addFile(inputFile); } reader.open();
-		 * System.out.println("Opened " + inFileNum + " evio files.");
-		 */
-
-		// String oDir =
-		// "/u/site/www/html/Hall-B/secure/clas12/adhikari/GemcCosmicComp/New1DcCosmic/LayerEff/";
-		String oDir = "/u/site/www/html/Hall-B/secure/clas12/adhikari/DCcalib/Time2Dist/RDjava";
-		oDir = String.format("C:\\Users\\KPAdhikari\\Desktop\\BigFls\\CLAS12\\T2DOp");
-		// String outputFile =
-		// String.format("%s/fitPars_residualInDocaBins_TBhits%s.txt",oDir,dataType);
-		String outputFile = String.format("%s/fitPars_residualInDocaBins_TBhits%s.txt", oDir, dataType);
+		String outputFile = "/Volumes/Mac_Storage/Work_Codes/GIT_HUB/DC_Calibration/src/images/fitPars_residualInDocaBins_TBhits.txt"
+				+ dataType;
 		String printIt;
 
-		// http://grails.asia/groovy-file-examples
-		// File file = new File(outputFile); //("C:/temp/test.txt") //worked
-		// ##########def file = new File(outputFile); //("C:/temp/test.txt")
-
-		// http://www.studytrails.com/java-io/file-copying-and-moving-deleting.jsp
-		// ##########file.delete(); file = new File(outputFile); //Deleting and
-		// opening again (to avoid appending to old file)
-
-		// http://stackoverflow.com/questions/1016278/is-this-the-best-way-to-rewrite-the-content-of-a-file-in-java
-		// FileWriter file = new FileWriter(fl, false); // true to append, //
-		// false to overwrite.
-		// file.write "This is the first line\n"; // works only with File, not
-		// FileWriter
-		// System.out.println file.text; // works only with File, not FileWriter
-		// ########## file << "Superlayer docaBinNum GausFitPars(Amp Mean
-		// Sigma)\n"; // works
-		// file.write("Superlayer docaBinNum GausFitPars(Amp Mean Sigma)\n");
 		int[] idAll, secAll, slAll, layAll, wireAll, lrAll, clustIDAll;
 		double[] timeAll, docaAll, trkDocaAll, xAll, zAll, timeResAll, docaErrAll;
 
-		// 8/10/16: without 'null' assignment, Compiler gave: "error: variable
-		// bnkSegTrks might not have been initialized"
 		bnkHits = null;
 		EvioDataBank bnkClust = null, bnkSegs = null, bnkSegTrks = null, bnkCross = null;
 
 		/////////////// Start of event loop within processData()
-		/////////////// /////////////////////////////
 		while (reader.hasEvent()) {
 			EvioDataEvent event = reader.getNextEvent();
-			// boolean tbHits=false, tbClust=true, tbSegs=true, tbSegTrks=false,
-			// tbCross=false;//, tbClusts=false;
-			boolean tbHits = false, tbClust = false, tbSegs = false, tbSegTrks = false, tbCross = false;// ,
-																										// tbClusts=false;
+			boolean tbHits = false, tbClust = false, tbSegs = false, tbSegTrks = false, tbCross = false;
 			nTBHits = 0;
 			int nTBClust = 0, nTBSegs = 0, nTBSegTrks = 0, nTBCrosses = 0;
 			int nHitsInSeg = 0;
@@ -1076,7 +1033,14 @@ public class ReadRecDataForMinuit implements ActionListener {
 		// c0.draw(h2timeVtrkDoca[1][1]);
 		// c0.cd(2); c0.draw(h2timeVtrkDoca[0][0]); c0.cd(3);
 		// c0.draw(h2timeVtrkDoca[0][1]);
-		imgNm = String.format("%s/timeVsTrkDoca_and_Profiles.png", oDir, dataType);
+		imgNm = "/Volumes/Mac_Storage/Work_Codes/GIT_HUB/DC_Calibration/src/images/timeVsTrkDoca_and_Profiles.png";
+		System.out.println("#################################################");
+		System.out.println("#################################################");
+
+		System.out.println("I am saving a image of " + imgNm);
+		System.out.println("#################################################");
+		System.out.println("#################################################");
+
 		c0.save(imgNm);
 
 		/*
@@ -1096,7 +1060,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 		c01.draw(h2timeVtrkDoca[0][0]);
 		c01.cd(1);
 		c01.draw(profileX[0][0]);
-		imgNm = String.format("%s/timeVsTrkDoca_and_Profiles2.png", oDir, dataType);
+		imgNm = "/Volumes/Mac_Storage/Work_Codes/GIT_HUB/DC_Calibration/src/images/timeVsTrkDoca_and_Profiles2.png";
 		c01.save(imgNm);
 
 		// TCanvas c03 = new TCanvas("c03","trkDoca/docaMax in Different #theta
@@ -1211,7 +1175,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 			c03.cd(j * 4 + 3);
 			c03.draw(profileXvz[1][j]);
 		}
-		imgNm = String.format("%s/timeVsTrkDoca_and_ProfilesVZ.png", oDir, dataType);
+		imgNm = "/Volumes/Mac_Storage/Work_Codes/GIT_HUB/DC_Calibration/src/images/timeVsTrkDoca_and_ProfilesVZ.png";
 		c03.save(imgNm);
 
 		for (int i = 0; i < 5; i++)
@@ -1265,7 +1229,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 			c06.draw(profileXvz[1][j]);
 			c06.draw(myFitLinesGroot[1][j], "same");
 		}
-		imgNm = String.format("%s/myTestFitFunctionAllThBins_wdGroot.png", oDir, dataType);
+		imgNm = "/Volumes/Mac_Storage/Work_Codes/GIT_HUB/DC_Calibration/src/images/myTestFitFunctionAllThBins_wdGroot.png";
 		c06.save(imgNm);
 
 		// 10/4/16: Trying to make plot of residuals for each superlayer
@@ -1280,7 +1244,8 @@ public class ReadRecDataForMinuit implements ActionListener {
 			for (int j = 0; j < nThBinsVz; j++) {
 			}
 		}
-	}// End of ProcessData()
+	}// End of
+		// ProcessData()
 
 	// Got " error: unreported exception IOException; must be caught or declared
 	// to be thrown" when copiled without 'throws IOException' below
@@ -1509,4 +1474,5 @@ public class ReadRecDataForMinuit implements ActionListener {
 	// {System.out.println(str);}
 	// public static void System.out.print(String str)
 	// {System.out.print(str);}
+
 }

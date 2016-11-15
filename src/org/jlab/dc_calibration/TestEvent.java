@@ -3,7 +3,7 @@
              * To change this template file, choose Tools | Templates
              * and open the template in the editor.
  */
-package java.org.jlab.dc_calibration;
+package org.jlab.dc_calibration;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +19,7 @@ import org.jlab.io.evio.EvioDataEvent;
  *
  * @author KPAdhikari
  */
-public class ReadRecDataIn implements ActionListener {
+public class TestEvent implements ActionListener {
 
 	int eventNr;
 	static boolean debug = false; // for debugging
@@ -29,7 +29,7 @@ public class ReadRecDataIn implements ActionListener {
 
 	private int x = 0, y = 0;
 
-	public ReadRecDataIn() {
+	public TestEvent() {
 		this.x = 3;
 		this.y = 5;
 	}
@@ -72,7 +72,7 @@ public class ReadRecDataIn implements ActionListener {
 			reader.addFile(inputFile);
 		}
 		reader.open();
-		println("Opened the input data file (from ReadRecDataIn class) !");
+		println("Opened the input data file!");
 
 		int counter = 0, NumEv2process = 20, nTBHits = 0;
 		EvioDataBank bnkHits = null;

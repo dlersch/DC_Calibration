@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package java.org.jlab.dc_calibration;
+package org.jlab.dc_calibration;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

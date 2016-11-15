@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package java.org.jlab.dc_calibration;
+package org.jlab.dc_calibration;
 
 //kp: 8/15/16: Started from the copy of Will Phelp's code for doubleGaussianF1D class that he had written for me.
 import java.util.ArrayList;

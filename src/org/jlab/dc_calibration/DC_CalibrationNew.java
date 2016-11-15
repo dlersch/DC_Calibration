@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package java.org.jlab.dc_calibration;
-
-import static java.lang.System.exit;
+package org.jlab.dc_calibration;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,9 +20,6 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -40,20 +35,22 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 
 	private JFrame frame;
 	private JTextArea textArea;
-	private Thread reader;
-	private Thread reader2;
+	protected Thread reader;
+	protected Thread reader2;
 	private boolean quit;
 
 	private final PipedInputStream pin = new PipedInputStream();
 	private final PipedInputStream pin2 = new PipedInputStream();
 
 	Thread errorThrower; // just for testing (Throws an Exception at this
-							// Console
+	                     // Console
 	Thread mythread; // kp
 
 	public JLabel banner;
 	JButton bFileChooser, buttonClear;
 	JFileChooser fc;
+
+	private String fileName;
 
 	public DC_CalibrationNew() {
 		// create all components and add them
@@ -92,7 +89,7 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 		JPanel panelForButtons = new JPanel(new BorderLayout());
 		// panelForButtons.add(banner, BorderLayout.CENTER);
 		// bFileChooser = new JButton("Choose File");
-		bFileChooser = new JButton("Choose File", createImageIcon("images/Open16.gif"));
+		bFileChooser = new JButton("Choose File", createImageIcon("/images/Open16.gif"));
 		bFileChooser.addActionListener(this);
 
 		JButton bT0Cor = new JButton("Estimate & Apply T0 Correction");
@@ -110,7 +107,7 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 		// into a new JPanel as follows
 		JPanel p2buttons = new JPanel(new BorderLayout());
 		p2buttons.add(bT0Cor, BorderLayout.LINE_START); // WEST); //WEST also
-														// works
+		                                                // works
 		p2buttons.add(p3buttons, BorderLayout.CENTER);
 		p2buttons.add(bT2Dfitter, BorderLayout.LINE_END); // EAST also works
 
@@ -132,7 +129,7 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 
 		JPanel panelImg = new JPanel(new BorderLayout());
 
-		ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/blue.gif"));
+		ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("/images/blue.gif"));
 		// ImageIcon imageIcon = new
 		// ImageIcon(this.getClass().getResource("images/timeVsTrkDoca_and_Profiles.png"));
 		JLabel imgLabel = new JLabel(imageIcon);
@@ -140,7 +137,7 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 
 		TestEvent e1 = new TestEvent();
 		bT0Cor.addActionListener(e1);
-		ReadRecDataIn e2 = new ReadRecDataIn();
+		ReadRecDataIn e2 = new ReadRecDataIn(fileName);
 		bDecoder.addActionListener(e2);
 		ReadRecDataForMinuit e3 = new ReadRecDataForMinuit();
 		bT2Dfitter.addActionListener(e3);
@@ -210,7 +207,7 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 		// class (i.e. aSimpleJavaConsole) itself
 		reader = new Thread(this);
 		reader.setDaemon(true); // kp: make this thread a process running in the
-								// background (no interactive access)
+		                        // background (no interactive access)
 		reader.start(); // kp: start this process
 		//
 		reader2 = new Thread(this);
@@ -218,20 +215,12 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 		reader2.start();
 
 		/*
-		 * // testing part // you may omit this part for your application //
-		 * System.out.println("Hello World 2");
-		 * System.out.println("All fonts available to Graphic2D:\n");
-		 * GraphicsEnvironment ge =
-		 * GraphicsEnvironment.getLocalGraphicsEnvironment(); String[]
-		 * fontNames=ge.getAvailableFontFamilyNames(); for(int
-		 * n=0;n<fontNames.length;n++) System.out.println(fontNames[n]); //
-		 * Testing part: simple an error thrown anywhere in this JVM will be
-		 * printed on the Console // We do it with a seperate Thread becasue we
-		 * don't wan't to break a Thread used by the Console.
+		 * // testing part // you may omit this part for your application // System.out.println("Hello World 2");
+		 * System.out.println("All fonts available to Graphic2D:\n"); GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment(); String[]
+		 * fontNames=ge.getAvailableFontFamilyNames(); for(int n=0;n<fontNames.length;n++) System.out.println(fontNames[n]); // Testing part: simple an error thrown
+		 * anywhere in this JVM will be printed on the Console // We do it with a seperate Thread becasue we don't wan't to break a Thread used by the Console.
 		 * 
-		 * System.out.println("\nLets throw an error on this console");
-		 * errorThrower=new Thread(this); errorThrower.setDaemon(true);
-		 * errorThrower.start();
+		 * System.out.println("\nLets throw an error on this console"); errorThrower=new Thread(this); errorThrower.setDaemon(true); errorThrower.start();
 		 */
 	}
 
@@ -277,9 +266,16 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
+				try {
+					fileName = file.getCanonicalPath();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 				// This is where a real application would open the file.
 				// log.append("Opening: " + file.getName() + "." + newline);
-				System.out.println("Opening: " + file.getName() + ".\n");
+				System.out.println("Opening: " + fileName + ".\n");
 			} else {
 				// log.append("Open command cancelled by user." + newline);
 				System.out.println("Open command cancelled by user.\n");
@@ -288,14 +284,10 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 
 			// Handle save button action.
 		} /*
-			 * else if (evt.getSource() == saveButton) { int returnVal =
-			 * fc.showSaveDialog(FileChooserDemo.this); if (returnVal ==
-			 * JFileChooser.APPROVE_OPTION) { File file = fc.getSelectedFile();
-			 * //This is where a real application would save the file.
-			 * log.append("Saving: " + file.getName() + "." + newline); } else {
-			 * log.append("Save command cancelled by user." + newline); }
-			 * log.setCaretPosition(log.getDocument().getLength()); }
-			 */
+		   * else if (evt.getSource() == saveButton) { int returnVal = fc.showSaveDialog(FileChooserDemo.this); if (returnVal == JFileChooser.APPROVE_OPTION) { File
+		   * file = fc.getSelectedFile(); //This is where a real application would save the file. log.append("Saving: " + file.getName() + "." + newline); } else {
+		   * log.append("Save command cancelled by user." + newline); } log.setCaretPosition(log.getDocument().getLength()); }
+		   */
 		else if (evt.getSource() == buttonClear) {
 			textArea.setText("");
 		}
@@ -334,11 +326,8 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 		}
 
 		/*
-		 * // just for testing (Throw a Nullpointer after 1 second) if
-		 * (Thread.currentThread()==errorThrower) { try { this.wait(1000);
-		 * }catch(InterruptedException ie){} throw new NullPointerException(
-		 * "Application test: throwing an NullPointerException It should arrive at the console"
-		 * ); }
+		 * // just for testing (Throw a Nullpointer after 1 second) if (Thread.currentThread()==errorThrower) { try { this.wait(1000); }catch(InterruptedException
+		 * ie){} throw new NullPointerException( "Application test: throwing an NullPointerException It should arrive at the console" ); }
 		 */
 	}
 
@@ -346,73 +335,39 @@ public class DC_CalibrationNew extends WindowAdapter implements WindowListener, 
 		String input = "";
 		do {
 			/**
-			 * kp: PipedInputStream inherits from InputStream and available() is
-			 * one of its methods.
-			 * https://docs.oracle.com/javase/7/docs/api/java/io/InputStream.
-			 * html available(): Returns an estimate of the number of bytes that
-			 * can be read (or skipped over) from this input stream without
-			 * blocking by the next invocation of a method for this input
-			 * stream.
+			 * kp: PipedInputStream inherits from InputStream and available() is one of its methods. https://docs.oracle.com/javase/7/docs/api/java/io/InputStream.
+			 * html available(): Returns an estimate of the number of bytes that can be read (or skipped over) from this input stream without blocking by the next
+			 * invocation of a method for this input stream.
 			 * 
-			 * read(byte[] b): Reads some number of bytes from the input stream
-			 * and stores them into the buffer array b.
+			 * read(byte[] b): Reads some number of bytes from the input stream and stores them into the buffer array b.
 			 */
 			int available = in.available();
 			if (available == 0)
 				break;
 			byte b[] = new byte[available]; // kp: creating a 'byte' array of
-											// size 'available'
+			                                // size 'available'
 			in.read(b);
 			input = input + new String(b, 0, b.length);
 		} while (!input.endsWith("\n") && !input.endsWith("\r\n") && !quit);
 		return input;
 	}
 
-	public static void main(String[] arg) {
-		// new aSimpleJavaConsole(); // create console with not reference
-		// kp:
-		DC_CalibrationNew cnt = new DC_CalibrationNew(); // create console with
-															// not reference
-		// KpLib1 a;
-		System.out.println("Main thread run is starting now ...");
-		int kpLoopBreaker = 0;
-		try {
-			// while(cnt.mythread.isAlive())
-			while (cnt.reader.isAlive() || cnt.reader2.isAlive()) {
-				System.out.println("Main thread will be alive till the child thread is live");
-				Thread.sleep(1500);
+	// private void initMenu() {
+	// JMenuBar bar = new JMenuBar();
+	// JMenu fileMenu = new JMenu("File");
+	// JMenuItem processItem = new JMenuItem("Process File");
+	// processItem.addActionListener(this);
+	// fileMenu.add(processItem);
+	// bar.add(fileMenu);
+	//
+	// JMenu pluginMenu = new JMenu("Plugins");
+	// JMenuItem loadPlugin = new JMenuItem("Tree Viewer");
+	// loadPlugin.addActionListener(this);
+	// pluginMenu.add(loadPlugin);
+	//
+	// bar.add(pluginMenu);
+	//
+	// this.setJMenuBar(bar);
+	// }
 
-				for (int i = 0; i < 4; i++) {
-					System.out.println("Printing the count " + i);
-					System.out.println("Printing the count with my own System.out.println (KpLib1) " + i); // method
-					// defined
-					// in
-					// my
-					// own
-					// library
-					Thread.sleep(1000);
-				}
-				kpLoopBreaker++;
-				System.out.println("========kpLoopBreaker = " + kpLoopBreaker + "=============");
-				// if(kpLoopBreaker>3) break;
-				if (kpLoopBreaker > 300)
-					break;
-			}
-		} catch (InterruptedException e) {
-			System.out.println("Main thread interrupted");
-		}
-		System.out.println("Main thread run is over");
-		System.out.println("========Now this program will sleep for 5 secs and then exit=============");
-
-		// kp:
-		// http://www.java67.com/2015/06/how-to-pause-thread-in-java-using-sleep.html
-		try {
-			// Let's wait to see game thread stopped
-			TimeUnit.MILLISECONDS.sleep(5000); // kp: Sleep for 5 seconds
-			exit(0);
-		} catch (InterruptedException ex) {
-			Logger.getLogger(DC_CalibrationNew.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-	}
 }

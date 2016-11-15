@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package java.org.jlab.dc_calibration;
+package org.jlab.dc_calibration;
 
 import java.awt.Color;
 import java.awt.Font;

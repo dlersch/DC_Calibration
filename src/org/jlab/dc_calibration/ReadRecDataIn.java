@@ -3,7 +3,7 @@
              * To change this template file, choose Tools | Templates
              * and open the template in the editor.
  */
-package java.org.jlab.dc_calibration;
+package org.jlab.dc_calibration;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,28 +19,30 @@ import org.jlab.io.evio.EvioDataEvent;
  *
  * @author KPAdhikari
  */
-public class TestEvent implements ActionListener {
+public class ReadRecDataIn implements ActionListener {
 
 	int eventNr;
 	static boolean debug = false; // for debugging
 	protected static java.util.List<String> inputFiles;
 	static long numEvents = 15000;// (long) 1e9; // events to process
 	static long printEventNr = 20000; // display progress
-
+	private String fileName;
 	private int x = 0, y = 0;
 
-	public TestEvent() {
-		this.x = 3;
-		this.y = 5;
+	public ReadRecDataIn() {
+		String fDir = "/Volumes/Mac_Storage/Work_Codes/CLAS12/DC_Calibration/data/";
+		String fName = "reconstructedDataR128T0corT2DfromCCDBvarFit08.1.evio";
+		this.fileName = fDir + fName;
+		System.out.println("In default constructor with fileName of " + fileName);
+	}
+
+	public ReadRecDataIn(String fileName) {
+		this.fileName = fileName;
+		System.out.println("In constructor with fileName of " + fileName);
+
 	}
 
 	public void actionPerformed(ActionEvent ev) {
-		/*
-		 * //label2.setText("Label2: This time you can see more words here.");
-		 * if (y == 0) {
-		 * label.setText("Label2: This time you can see more words here."); y =
-		 * 1; } else if (y == 1) { label.setText(""); y = 0; }
-		 */
 		String myMessage = null;
 		myMessage = String.format("Hello from Dialog inside TestEvent class!! x=%d, y=%d", x, y);
 
@@ -49,10 +51,13 @@ public class TestEvent implements ActionListener {
 		// show a joptionpane dialog using showMessageDialog
 		// JOptionPane.showMessageDialog(frame, myMessage);
 		JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
+		System.out.println("In action Performed with fileName of " + fileName);
+
 		processData();
 	}
 
 	public void processData() {
+		System.err.println("this better be the file" + fileName);
 		long printEvent;
 		if (debug) {
 			printEvent = 1;
@@ -61,18 +66,14 @@ public class TestEvent implements ActionListener {
 		}
 
 		int inFileNum = 1;
-		String inputFile = null;
-		String fDir = "C:\\Users\\KPAdhikari\\Desktop\\BigFls\\CLAS12";
-		String fName = "reconstructedDataR128T0corT2DfromCCDBvarFit10";
 		EvioDataChain reader = new EvioDataChain();
 		// for (String inputFile : inputFiles) {
 		for (int fN = 0; fN < inFileNum; fN++) {
 			// if (inputFile == null) { break; }
-			inputFile = String.format("%s\\%s.%d.evio", fDir, fName, fN);
-			reader.addFile(inputFile);
+			reader.addFile(fileName);
 		}
 		reader.open();
-		println("Opened the input data file!");
+		println("Opened the input data file (from ReadRecDataIn class) !");
 
 		int counter = 0, NumEv2process = 20, nTBHits = 0;
 		EvioDataBank bnkHits = null;
