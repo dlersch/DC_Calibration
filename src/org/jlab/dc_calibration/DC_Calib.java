@@ -68,8 +68,11 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 	// file to be read and analyzed
 	private String fileName;
 	// buttons to be implemented
-	JButton bFileChooser, bTestEvent, bReadRecDataIn, bReconst, bReadRecDataForMinuit, ccdbWriter, buttonClear;
-
+	JButton bFileChooser, bTestEvent, bReadRecDataIn, bReconst, bReadRecDataForMinuit, testbutton, ccdbWriter, buttonClear;
+    JButton testbutton2;
+    
+	OrderOfAction OA = new OrderOfAction();
+	
 	public DC_Calib() {
 		createFrame();
 		createFileChooser();
@@ -111,8 +114,21 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 		bReadRecDataForMinuit = new JButton();
 		ccdbWriter = new JButton();
 		buttonClear = new JButton("Clear");
+		testbutton = new JButton("Testitest");
+		testbutton2 = new JButton("Testitest2");
+		
+		OA.setbuttonorder(bReadRecDataIn, 1);
+		OA.setbuttonorder(bReconst, 2);
+		OA.setbuttonorder(bTestEvent, 3);
+		OA.setbuttonorder(bReadRecDataForMinuit,4);
+		OA.setbuttonorder(ccdbWriter, 5);
 
 		bTestEvent.setText("<html>" + "Estimate & Apply T0 Correction" + "</html>");
+		/*
+		testbutton.setOpaque(true);
+		testbutton.setContentAreaFilled(true);
+		testbutton.setBackground(Color.red);
+		*/
 		bReadRecDataIn.setText("<html>" + "Run Decoder" + "</html>");
 		bReconst.setText("<html>" + "Run Reconstruction" + "</html>");
 		bReadRecDataForMinuit.setText("<html>" + "Run DOCA-to-Time Fitter" + "</html>");
@@ -178,6 +194,8 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 		buttonPanel.add(bTestEvent);
 		buttonPanel.add(bReadRecDataForMinuit);
 		buttonPanel.add(ccdbWriter);
+		//buttonPanel.add(testbutton);
+		//buttonPanel.add(testbutton2);
 	}
 
 	private void addToCenterPanel() {
@@ -185,7 +203,6 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 		centerPanel.add(new JScrollPane(panelImg), BorderLayout.WEST);
 		centerPanel.add(buttonPanel, BorderLayout.CENTER);
 		centerPanel.add(new JScrollPane(textArea), BorderLayout.EAST);
-
 	}
 
 	private void addToTextArea() {
@@ -211,14 +228,23 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 	private void addListeners() {
 		bFileChooser.addActionListener(this);
 
-		TestEvent e1 = new TestEvent();
+		TestEvent e1 = new TestEvent(OA);
 		bTestEvent.addActionListener(e1);
-		ReadRecDataIn e2 = new ReadRecDataIn();// fileName
+		ReadRecDataIn e2 = new ReadRecDataIn(OA);// fileName
 		bReadRecDataIn.addActionListener(e2);
-		ReadRecDataForMinuit e3 = new ReadRecDataForMinuit();
+		ReadRecDataForMinuit e3 = new ReadRecDataForMinuit(OA);
 		bReadRecDataForMinuit.addActionListener(e3);
+		
+		bReconst.addActionListener(this);
+		ccdbWriter.addActionListener(this);
+		
 		buttonClear.addActionListener(this);
+		//testbutton.addActionListener(this);
+		//testbutton2.addActionListener(this);
+		
 		listen();
+		
+	
 	}
 
 	private void listen() {
@@ -250,6 +276,9 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 		reader2 = new Thread(this);
 		reader2.setDaemon(true);
 		reader2.start();
+		
+		
+		//System.out.println(order);
 	}
 
 	/** Returns an ImageIcon, or null if the path was invalid. */
@@ -291,6 +320,7 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 
 	public synchronized void actionPerformed(ActionEvent evt) {
 		// Handle open button action.
+			
 		if (evt.getSource() == bFileChooser) {
 			int returnVal = fc.showOpenDialog(fc);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -307,7 +337,23 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 			}
 		} else if (evt.getSource() == buttonClear) {
 			textArea.setText("");
+			
+			//passVariable order = new passVariable();
+			//System.out.println(order.getval(var));
 		}
+		
+	   if(evt.getSource() == testbutton){
+		   
+	   }
+	   
+	  
+	   OA.buttonstatus(evt);
+	   
+	    if(OA.isorderOk()){
+		     System.out.println("I am green and now I should do something here...");
+	     }else System.out.println("I am red and it is not my turn now ;( ");
+	   
+	   
 	}
 
 	public synchronized void run() {
@@ -342,6 +388,9 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 			textArea.append("The error is: " + e);
 		}
 
+		
+		
+		
 		/*
 		 * // just for testing (Throw a Nullpointer after 1 second) if (Thread.currentThread()==errorThrower) { try { this.wait(1000); }catch(InterruptedException
 		 * ie){} throw new NullPointerException( "Application test: throwing an NullPointerException It should arrive at the console" ); }
@@ -368,7 +417,8 @@ public class DC_Calib extends WindowAdapter implements WindowListener, ActionLis
 		} while (!input.endsWith("\n") && !input.endsWith("\r\n") && !quit);
 		return input;
 	}
-
+	
+	
 	// private void initMenu() {
 	// JMenuBar bar = new JMenuBar();
 	// JMenu fileMenu = new JMenu("File");

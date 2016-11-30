@@ -84,10 +84,14 @@ public class ReadRecDataForMinuit implements ActionListener {
 	// ===== 8/11/16
 
 	private int x = 0, y = 0;
+	private boolean acceptorder = false;
+	
+	private OrderOfAction OAInstance;
 
-	public ReadRecDataForMinuit() {
+	public ReadRecDataForMinuit(OrderOfAction OA) {
 		this.x = 3;
 		this.y = 5;// Just for a quick test
+		OAInstance = OA;
 	}
 
 	public void actionPerformed(ActionEvent ev) {
@@ -102,24 +106,40 @@ public class ReadRecDataForMinuit implements ActionListener {
 
 		JFrame frame = new JFrame("JOptionPane showMessageDialog example1");
 
+		OAInstance.buttonstatus(ev);
+		acceptorder = OAInstance.isorderOk();
 		// show a joptionpane dialog using showMessageDialog
 		// JOptionPane.showMessageDialog(frame, myMessage);
-		JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
+		
 		try {
-			processData();
+		//	processData();
+			
+			
+			if(acceptorder){
+				  processData();
+				  JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
+				}else System.out.println("I am red and it is not my turn now ;( ");
+			
 		} catch (IOException ex) {
 			Logger.getLogger(ReadRecDataForMinuit.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	public void processData() throws IOException {
+		
+		System.out.println("I am green and now I should do something here...");
+		
+		
 		long printEvent;
 		if (debug == 1) {
 			printEvent = 1;
 		} else {
 			printEvent = printEventNr;
 		}
-
+	}
+		
+		/*
+		
 		int inFileNum = 1;
 		String inputFile = null;
 		String fDir = "/Volumes/Mac_Storage/Work_Codes/CLAS12/DC_Calibration/data/";
@@ -190,7 +210,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 		 * Integer.parseInt(args[2]); String dataType =
 		 * args[3];//outputImageName = args[2]; int debug =
 		 * Integer.parseInt(args[4]); //==========10/12/15
-		 */
+		 
 		inFileNum = 1;
 		NumEv2process = 20000;
 		String dataType = "Cosmic";// 10/27/16
@@ -207,7 +227,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 		 * System.out.println("Total and ToBeProcessed Events: "+totNumOfEvs+
 		 * ", " +NumEv2process); if(NumEv2process<1) NumEv2process=totNumOfEvs;
 		 * //==========10/12/15
-		 */
+		 
 
 		double dMax = 0.0;
 		System.out.print("wpdist[] = {");
@@ -233,7 +253,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 		 * matchedHitID and fill a histogram hE with trkDoca for values of
 		 * matchedHitID!=1, and get the ratio of hE to HTot you will get the
 		 * efficiency as a function of trkDoca.
-		 */
+		 
 		counter = 0;
 		int counter2 = 0;
 		int id = -1, sector = -1, superlayer = -1, SL = -1, layer = -1, wire = -1, LR = -1, size = -1;// ,
@@ -513,7 +533,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 			/*
 			 * //fw = new FileWriter(file.getAbsoluteFile()); fw = new
 			 * FileWriter(file); bw = new BufferedWriter(fw);
-			 */
+			 
 			fos = new FileOutputStream(file);
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 
@@ -767,7 +787,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 						 * for(int h=0;h<12;h++)
 						 * System.out.println(hitID[h]+",");
 						 * System.out.println(clusterID); }
-						 */
+						 
 
 						if (debug > -1) {
 							printIt = String.format("%d,%d,%d,%d,%d,  %d,%d,%d,%d,%d,  %d,%d,%d,%d,%d  ,%d,%d,%d", ID,
@@ -947,7 +967,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 						 * banks will have less # of entries. For example there
 						 * could be just one or two clusters, segments, or
 						 * tracks.
-						 */
+						 
 
 						if (debug == -2 && gSegmThBin[segmentID] == 4) { // To
 																			// identify
@@ -1049,7 +1069,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 		 * Rectangle(100,100)); BufferedImage bi=robot.createScreenCapture(c1);
 		 * //ImageIO.write(bi, "jpg", new File("C:/imageTest.jpg"));
 		 * ImageIO.write(bi, "gif", new File(imgNm));
-		 */
+		 
 
 		// TCanvas c01 = new TCanvas("c01","time vs trkDoca (&
 		// profile)",3*400,2*400,1,2);
@@ -1101,7 +1121,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 			 * //http://java.freehep.org/freehep-jminuit/apidocs/org/freehep/
 			 * math/minuit/package-summary.html
 			 * upar.setLimits(p,pLow[p],pHigh[p]); //Works
-			 */
+			 
 			// Instead of above add() and setLimits(), I can use the following
 			// add() to do the job for both
 			upar.add(parName[p], prevFitPars[p], parSteps[p], pLow[p], pHigh[p]);
@@ -1348,6 +1368,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 			}
 			System.out.println("chisq = " + chisq);
 			return chisq;// fval;
+			
 		}
 
 		public double calcTimeFunc(int debug, int SL, double thetaDeg, double docaByDocaMax, double[] par) // 9/4/16
@@ -1431,6 +1452,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 	}
 
 	// Following was used for a str. line fit.
+
 	static class KrishnaQuickTest {
 		KrishnaQuickTest(int slNum, int nThBins, GraphErrors[][] profile) // kp:
 																			// [sl][thBin]
@@ -1458,7 +1480,7 @@ public class ReadRecDataForMinuit implements ActionListener {
 				 * profileX[0][0].getErrorX(i) + " " +
 				 * profileX[0][0].getDataY(i) + " " +
 				 * profileX[0][0].getErrorY(i));
-				 */ // valid only for coatjava2.4 plotting packag
+				  // valid only for coatjava2.4 plotting packag
 				System.out.println("i X(i) ErrorX(i)  Y(i) ErrorY(i): " + i + " " + profileX[0][0].getDataX(i) + " "
 						+ profileX[0][0].getDataEX(i) + " " + profileX[0][0].getDataY(i) + " "
 						+ profileX[0][0].getDataEY(i));
@@ -1475,4 +1497,5 @@ public class ReadRecDataForMinuit implements ActionListener {
 	// public static void System.out.print(String str)
 	// {System.out.print(str);}
 
+*/
 }

@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JButton;
 
 import org.jlab.io.evio.EvioDataBank;
 import org.jlab.io.evio.EvioDataChain;
@@ -28,38 +30,57 @@ public class TestEvent implements ActionListener {
 	static long printEventNr = 20000; // display progress
 
 	private int x = 0, y = 0;
+	private boolean acceptorder = false;
+	
+	private OrderOfAction OAInstance;
 
-	public TestEvent() {
+	public TestEvent(OrderOfAction OA) {
 		this.x = 3;
-		this.y = 5;
+		//this.y = 5;
+		OAInstance = OA;
 	}
 
 	public void actionPerformed(ActionEvent ev) {
 		/*
-		 * //label2.setText("Label2: This time you can see more words here.");
-		 * if (y == 0) {
-		 * label.setText("Label2: This time you can see more words here."); y =
-		 * 1; } else if (y == 1) { label.setText(""); y = 0; }
+		 label2.setText("Label2: This time you can see more words here.");
+		 if (y == 0) {
+		 label.setText("Label2: This time you can see more words here."); y =
+		  1; } else if (y == 1) { label.setText(""); y = 0; }
 		 */
 		String myMessage = null;
 		myMessage = String.format("Hello from Dialog inside TestEvent class!! x=%d, y=%d", x, y);
 
 		JFrame frame = new JFrame("JOptionPane showMessageDialog example1");
-
+        
 		// show a joptionpane dialog using showMessageDialog
-		// JOptionPane.showMessageDialog(frame, myMessage);
-		JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
-		processData();
+		// JOptionPane.showMessageDialog(frame, myMessage)
+		
+		OAInstance.buttonstatus(ev);
+		acceptorder = OAInstance.isorderOk();
+		//y = OAInstance.getbuttonstatus(ev);
+		//z = isorderOk();
+		
+		
+		
+		if(acceptorder){
+			JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
+	      processData();
+		}else System.out.println("I am red and it is not my turn now ;( ");
+		
 	}
 
 	public void processData() {
+		
+		System.out.println("I am green and now I should do something here...");
+		
 		long printEvent;
 		if (debug) {
 			printEvent = 1;
 		} else {
 			printEvent = printEventNr;
 		}
-
+		
+		/*
 		int inFileNum = 1;
 		String inputFile = null;
 		String fDir = "C:\\Users\\KPAdhikari\\Desktop\\BigFls\\CLAS12";
@@ -72,13 +93,14 @@ public class TestEvent implements ActionListener {
 			reader.addFile(inputFile);
 		}
 		reader.open();
-		println("Opened the input data file!");
+		//println("Opened the input data file!");
 
 		int counter = 0, NumEv2process = 20, nTBHits = 0;
 		EvioDataBank bnkHits = null;
 
 		// Now loop over all the events
 		while (reader.hasEvent()) {
+			
 			EvioDataEvent event = reader.getNextEvent();
 			boolean tbHits = false;
 			if (counter < NumEv2process) {
@@ -91,6 +113,7 @@ public class TestEvent implements ActionListener {
 			}
 			counter++;
 		}
+		*/
 	}
 
 	// }
@@ -101,4 +124,6 @@ public class TestEvent implements ActionListener {
 	public static void print(String str) {
 		System.out.print(str);
 	}
+
+	
 }

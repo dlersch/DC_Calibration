@@ -28,8 +28,13 @@ public class ReadRecDataIn implements ActionListener {
 	static long printEventNr = 20000; // display progress
 	private String fileName;
 	private int x = 0, y = 0;
+	private boolean acceptorder = false;
+	
+	private OrderOfAction OAInstance;
 
-	public ReadRecDataIn() {
+	public ReadRecDataIn(OrderOfAction OA) {
+		OAInstance = OA;
+		
 		String fDir = "/Volumes/Mac_Storage/Work_Codes/CLAS12/DC_Calibration/data/";
 		String fName = "reconstructedDataR128T0corT2DfromCCDBvarFit08.1.evio";
 		this.fileName = fDir + fName;
@@ -50,13 +55,23 @@ public class ReadRecDataIn implements ActionListener {
 
 		// show a joptionpane dialog using showMessageDialog
 		// JOptionPane.showMessageDialog(frame, myMessage);
-		JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
+		
 		System.out.println("In action Performed with fileName of " + fileName);
 
-		processData();
+		OAInstance.buttonstatus(ev);
+		acceptorder = OAInstance.isorderOk();
+		
+		if(acceptorder){
+			JOptionPane.showMessageDialog(frame, "Click OK to start reading the reconstructed file ...");
+		  processData();
+		}else System.out.println("I am red and it is not my turn now ;( ");
 	}
 
 	public void processData() {
+		
+		System.out.println("I am green and now I should do something here...");
+		
+		/*
 		System.err.println("this better be the file" + fileName);
 		long printEvent;
 		if (debug) {
@@ -92,6 +107,7 @@ public class ReadRecDataIn implements ActionListener {
 			}
 			counter++;
 		}
+		*/
 	}
 
 	// }
